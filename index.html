@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="styles.css?v=18">
+  <link rel="stylesheet" href="styles.css?v=19">
 </head>
 <body>
 
@@ -141,49 +141,20 @@
       </div>
     </section>
 
-    <!-- SECCIÓN: Agenda -->
+<!-- SECCIÓN: Agenda -->
     <section class="section scrollspy-target" id="agenda">
-      <div class="section-title reveal">
-        <span class="tag">DISPONIBILIDAD SEMANAL</span>
-        <h3>AGENDA DE TURNOS LIBRES</h3>
-        <p>Espacios disponibles para Básquet y Vóley en Cancha 1 y Cancha 2 (Valor único: $40.000).</p>
-      </div>
-
-      <div class="agenda-grid">
-        <div class="agenda-card glass-effect reveal delay-1">
-          <h4>LUNES</h4>
-          <ul>
-            <li><span>14 a 18 hs</span> Cancha 1</li>
-            <li><span>22 a 23 hs</span> Cancha 1</li>
-            <li><span>14 a 20 hs</span> Cancha 2</li>
-            <li><span>22 a 23 hs</span> Cancha 2</li>
-          </ul>
-        </div>
-        <div class="agenda-card glass-effect reveal delay-2">
-          <h4>MARTES</h4>
-          <ul>
-            <li><span>14 a 19 hs</span> Cancha 2</li>
-          </ul>
-        </div>
-        <div class="agenda-card glass-effect reveal delay-3">
-          <h4>MIÉRCOLES</h4>
-          <ul>
-            <li><span>14 a 20 hs</span> Cancha 1 y 2</li>
-          </ul>
-        </div>
-        <div class="agenda-card glass-effect reveal delay-4">
-          <h4>JUEVES</h4>
-          <ul>
-            <li><span>14 a 20 hs</span> Cancha 2</li>
-          </ul>
-        </div>
-        <div class="agenda-card glass-effect reveal delay-5">
-          <h4>VIERNES</h4>
-          <ul>
-            <li><span>14 a 20 hs</span> Cancha 2</li>
-            <li><span>22 a 23 hs</span> Cancha 2</li>
-          </ul>
-        </div>
+      <div class="glass-effect reveal" style="padding: 40px 28px; border-radius: 20px; text-align: center; border: 1px solid rgba(204, 255, 0, 0.25);">
+        <span class="tag">DISPONIBILIDAD EN TIEMPO REAL</span>
+        <h3 style="font-size: 1.8rem; font-weight: 900; margin-bottom: 12px;">AGENDA DE TURNOS LIBRES</h3>
+        <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto 28px auto; font-size: 1rem;">
+          Publicamos todos los días los horarios disponibles y turnos libres actualizados en nuestras historias de Instagram.
+        </p>
+        <a href="https://www.instagram.com/arenaparanasport/" target="_blank" rel="noopener noreferrer" class="btn-main" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px;">
+          <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: currentColor;">
+            <path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3Z"/>
+          </svg>
+          VER TURNOS EN INSTAGRAM
+        </a>
       </div>
     </section>
 
@@ -244,11 +215,22 @@
           <div class="field focus-effect">
             <label>Horario Solicitado *</label>
             <select id="res-time" required>
-              <option value="14:00 a 18:00 hs">14:00 a 18:00 hs</option>
-              <option value="18:00 a 19:30 hs">18:00 a 19:30 hs</option>
-              <option value="19:30 a 21:00 hs">19:30 a 21:00 hs</option>
-              <option value="21:00 a 22:30 hs">21:00 a 22:30 hs</option>
-              <option value="22:00 a 23:00 hs">22:00 a 23:00 hs (Nocturno)</option>
+              <option value="08:00 a 09:00 hs">08:00 a 09:00 hs</option>
+              <option value="09:00 a 10:00 hs">09:00 a 10:00 hs</option>
+              <option value="10:00 a 11:00 hs">10:00 a 11:00 hs</option>
+              <option value="11:00 a 12:00 hs">11:00 a 12:00 hs</option>
+              <option value="12:00 a 13:00 hs">12:00 a 13:00 hs</option>
+              <option value="13:00 a 14:00 hs">13:00 a 14:00 hs</option>
+              <option value="14:00 a 15:00 hs">14:00 a 15:00 hs</option>
+              <option value="15:00 a 16:00 hs">15:00 a 16:00 hs</option>
+              <option value="16:00 a 17:00 hs">16:00 a 17:00 hs</option>
+              <option value="17:00 a 18:00 hs">17:00 a 18:00 hs</option>
+              <option value="18:00 a 19:00 hs">18:00 a 19:00 hs</option>
+              <option value="19:00 a 20:00 hs">19:00 a 20:00 hs</option>
+              <option value="20:00 a 21:00 hs">20:00 a 21:00 hs</option>
+              <option value="21:00 a 22:00 hs">21:00 a 22:00 hs</option>
+              <option value="22:00 a 23:00 hs">22:00 a 23:00 hs</option>
+              <option value="23:00 a 00:00 hs">23:00 a 00:00 hs</option>
             </select>
           </div>
 
@@ -298,6 +280,6 @@
     </div>
   </footer>
 
-  <script src="app.js?v=9"></script>
+  <script src="app.js?v=11"></script>
 </body>
 </html>

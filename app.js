@@ -3,24 +3,39 @@ const sportsData = [
     id: 'futsal',
     name: 'Futsal',
     icon: `<svg viewBox="0 0 24 24" class="sport-icon-box"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2.5-4l5-3-5-3v6z"/></svg>`,
-    desc: 'Cancha reglamentaria con superficie de alta calidad y excelente rebote.',
-    price: 'Completo: $80.000'
+    desc: 'Cancha reglamentaria con superficie de alta calidad y excelente rebote.'
   },
   {
     id: 'basquet',
     name: 'Básquet',
     icon: `<svg viewBox="0 0 24 24" class="sport-icon-box"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.53c-.22-.38-.63-.65-1.1-.65h-1v-2c0-.55-.45-1-1-1h-4v-1h3c.55 0 1-.45 1-1v-2h1c1.1 0 2-.9 2-2V7.15c2.28 1.45 3.84 3.93 3.98 6.85-1.57.19-2.92 1.05-3.88 2.4z"/></svg>`,
-    desc: 'Piso flotante profesional, aros rebatibles y marcación oficial.',
-    price: 'Completo $80k | Parcial $40k'
+    desc: 'Piso flotante profesional, aros rebatibles y marcación oficial.'
   },
   {
     id: 'voley',
     name: 'Vóley',
     icon: `<svg viewBox="0 0 24 24" class="sport-icon-box"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>`,
-    desc: 'Espacio óptimo con altura libre superior y red profesional ajustable.',
-    price: 'Completo $80k | Parcial $40k'
+    desc: 'Espacio óptimo con altura libre superior y red profesional ajustable.'
   }
 ];
+
+function renderSports() {
+  const container = document.getElementById('sports-grid-container');
+  if (!container) return;
+
+  container.innerHTML = sportsData.map((sport, index) => `
+    <div class="sport-card glass-effect reveal delay-${index + 1}">
+      <div>
+        ${sport.icon}
+        <h4>${sport.name}</h4>
+        <p>${sport.desc}</p>
+      </div>
+      <div class="sport-meta">
+        <button class="btn-sport" style="width: 100%; padding: 12px;" onclick="selectSportFromCard('${sport.name}')">Reservar Turno</button>
+      </div>
+    </div>
+  `).join('');
+}
 
 function renderSports() {
   const container = document.getElementById('sports-grid-container');
@@ -104,7 +119,7 @@ function generateReservation(event) {
   message += `👤 *Responsable:* ${name}\n\n`;
   message += `_¡Hola! Envío mi solicitud de reserva para consultar disponibilidad y confirmar el turno._`;
 
-  const phoneNumber = '5493436131681'; 
+  const phoneNumber = '5493434717233'; 
   const waUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
 
   window.open(waUrl, '_blank');
