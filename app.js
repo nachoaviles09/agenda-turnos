@@ -37,43 +37,6 @@ function renderSports() {
   `).join('');
 }
 
-function renderSports() {
-  const container = document.getElementById('sports-grid-container');
-  if (!container) return;
-
-  container.innerHTML = sportsData.map((sport, index) => `
-    <div class="sport-card glass-effect reveal delay-${index + 1}">
-      <div>
-        ${sport.icon}
-        <h4>${sport.name}</h4>
-        <p>${sport.desc}</p>
-      </div>
-      <div class="sport-meta">
-        <button class="btn-sport" style="width: 100%; padding: 12px;" onclick="selectSportFromCard('${sport.name}')">Reservar Turno</button>
-      </div>
-    </div>
-  `).join('');
-}
-
-function renderSports() {
-  const container = document.getElementById('sports-grid-container');
-  if (!container) return;
-
-  container.innerHTML = sportsData.map((sport, index) => `
-    <div class="sport-card glass-effect reveal delay-${index + 1}">
-      <div>
-        ${sport.icon}
-        <h4>${sport.name}</h4>
-        <p>${sport.desc}</p>
-      </div>
-      <div class="sport-meta">
-        <span class="sport-price">${sport.price}</span>
-        <button class="btn-sport" onclick="selectSportFromCard('${sport.name}')">Reservar</button>
-      </div>
-    </div>
-  `).join('');
-}
-
 function selectSportFromCard(sportName) {
   const select = document.getElementById('res-sport');
   if (select) {
