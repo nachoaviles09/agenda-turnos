@@ -63,6 +63,37 @@ function setMatchingSelectValue(selectEl, desiredValue) {
   return false;
 }
 
+function syncCourtWithModality() {
+  const selectMod = document.getElementById('res-modality');
+  const selectCourt = document.getElementById('res-court');
+  if (!selectMod || !selectCourt) return;
+
+  const modNorm = normalizeSelectionValue(selectMod.value);
+  if (modNorm.includes('completo')) {
+    selectCourt.value = 'Cancha Principal / Completa';
+  } else if (modNorm.includes('parcial') && selectCourt.value === 'Cancha Principal / Completa') {
+    selectCourt.value = 'Cancha 1';
+  }
+  applyAvailabilityToSelect();
+}
+
+function syncModalityWithCourt() {
+  const selectMod = document.getElementById('res-modality');
+  const selectCourt = document.getElementById('res-court');
+  if (!selectMod || !selectCourt) return;
+
+  const isCompleta = selectCourt.value === 'Cancha Principal / Completa';
+  const targetKeyword = isCompleta ? 'completo' : 'parcial';
+
+  const matchingOpt = [...selectMod.options].find(opt =>
+    normalizeSelectionValue(opt.value).includes(targetKeyword)
+  );
+  if (matchingOpt) {
+    selectMod.value = matchingOpt.value;
+  }
+  applyAvailabilityToSelect();
+}
+
 function selectSportFromCard(sportName) {
   const select = document.getElementById('res-sport');
   if (select && setMatchingSelectValue(select, sportName)) {
@@ -73,6 +104,7 @@ function selectSportFromCard(sportName) {
 function selectModality(modalityName) {
   const selectMod = document.getElementById('res-modality');
   if (selectMod && setMatchingSelectValue(selectMod, modalityName)) {
+    syncCourtWithModality();
     document.querySelector('.reservation-section').scrollIntoView({ behavior: 'smooth' });
   }
 }
@@ -87,24 +119,49 @@ function isSlotBlocked(bookedCourt, selectedCourt, bookedTime, optionTime) {
   return bookedCourt === selectedCourt;
 }
 
+function isPastHourToday(dateValue, optionTime) {
+  const now = new Date();
+  const todayLocal = now.toLocaleDateString('en-CA');
+  if (dateValue !== todayLocal) return false;
+
+  const currentHour = now.getHours();
+  const rawHour = parseInt(optionTime, 10);
+  if (isNaN(rawHour)) return false;
+
+  // 00:00 hs corresponde al cierre de la noche (hora 24)
+  const slotHour = rawHour === 0 ? 24 : rawHour;
+  return slotHour <= currentHour;
+}
+
 function applyAvailabilityToSelect() {
   const timeSelect = document.getElementById('res-time');
   const courtSelect = document.getElementById('res-court');
+  const dateInput = document.getElementById('res-date');
   if (!timeSelect || !courtSelect) return;
 
   const selectedCourt = courtSelect.value;
+  const selectedDate = dateInput ? dateInput.value : '';
   let firstAvailableIndex = -1;
 
   Array.from(timeSelect.options).forEach((option, index) => {
     const baseTime = option.value;
-    const occupied = occupiedBookingsCache.some(b =>
+    const isPast = isPastHourToday(selectedDate, baseTime);
+    const isOccupied = occupiedBookingsCache.some(b =>
       isSlotBlocked(b.court, selectedCourt, b.time, baseTime)
     );
 
-    option.disabled = occupied;
-    option.textContent = occupied ? `${baseTime} (OCUPADO)` : baseTime;
+    const disabled = isPast || isOccupied;
+    option.disabled = disabled;
 
-    if (!occupied && firstAvailableIndex === -1) {
+    if (isOccupied) {
+      option.textContent = `${baseTime} (OCUPADO)`;
+    } else if (isPast) {
+      option.textContent = `${baseTime} (HORARIO PASADO)`;
+    } else {
+      option.textContent = baseTime;
+    }
+
+    if (!disabled && firstAvailableIndex === -1) {
       firstAvailableIndex = index;
     }
   });
@@ -150,15 +207,24 @@ async function generateReservation(event) {
   const timeSelect = document.getElementById('res-time');
   const time = timeSelect.value;
   const name = document.getElementById('res-name').value.trim();
+  const phone = document.getElementById('res-phone').value.trim();
+  const submitBtn = document.querySelector('#reservation-form button[type="submit"]');
+  const successBox = document.getElementById('reservation-success-box');
 
-  if (!date || !name) {
-    alert('Por favor complete todos los campos obligatorios.');
+  if (!date || !name || !phone) {
+    alert('Por favor completá tu nombre, teléfono y fecha del turno.');
     return;
   }
 
   if (timeSelect.options[timeSelect.selectedIndex]?.disabled) {
-    alert('Ese horario ya se encuentra ocupado. Por favor elegí otro turno disponible.');
+    alert('Ese horario no está disponible. Por favor elegí otro turno libre.');
     return;
+  }
+
+  const originalBtnText = submitBtn ? submitBtn.textContent : '';
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Registrando turno...';
   }
 
   const refCode = 'APS-' + Math.floor(1000 + Math.random() * 9000);
@@ -166,6 +232,7 @@ async function generateReservation(event) {
   const reservationData = {
     refCode: refCode,
     name: name,
+    phone: phone,
     sport: sport,
     court: court,
     modality: modality,
@@ -188,6 +255,11 @@ async function generateReservation(event) {
     }
   } catch (error) {
     console.error('Error al registrar:', error);
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalBtnText;
+    }
   }
 
   occupiedBookingsCache.push({ time: time, court: court });
@@ -200,11 +272,25 @@ async function generateReservation(event) {
   message += `💳 *Modalidad:* ${modality}\n`;
   message += `📅 *Fecha:* ${date}\n`;
   message += `⏰ *Horario:* ${time}\n`;
-  message += `👤 *Responsable:* ${name}\n\n`;
-  message += `_¡Hola! Envío mi solicitud de reserva para consultar disponibilidad y confirmar el turno._`;
+  message += `👤 *Responsable:* ${name}\n`;
+  message += `📱 *Teléfono:* ${phone}\n\n`;
+  message += `_¡Hola! Envío mi solicitud de reserva para confirmar el turno._`;
 
   const phoneNumber = '5493434717233';
   const waUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
+
+  if (successBox) {
+    successBox.innerHTML = `
+      <span class="confirm-badge">CÓDIGO #${refCode}</span>
+      <h4>¡Turno pre-reservado en agenda!</h4>
+      <p><strong>${sport}</strong> · ${court}<br>${date} a las <strong>${time}</strong></p>
+      <a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-confirm">
+        Enviar comprobante por WhatsApp
+      </a>
+    `;
+    successBox.style.display = 'block';
+    successBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
 
   window.open(waUrl, '_blank');
 }
@@ -298,6 +384,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const dateInput = document.getElementById('res-date');
   const courtSelect = document.getElementById('res-court');
+  const modalitySelect = document.getElementById('res-modality');
 
   if (dateInput) {
     const today = new Date().toLocaleDateString('en-CA');
@@ -311,8 +398,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (courtSelect) {
-    courtSelect.addEventListener('change', () => {
-      applyAvailabilityToSelect();
-    });
+    courtSelect.addEventListener('change', syncModalityWithCourt);
+  }
+
+  if (modalitySelect) {
+    modalitySelect.addEventListener('change', syncCourtWithModality);
   }
 });

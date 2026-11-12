@@ -12,7 +12,7 @@
   <meta property="og:site_name" content="Arena Paraná Sport">
   <meta property="og:title" content="Arena Paraná Sport | Complejo Deportivo de Alta Gama">
   <meta property="og:description" content="Canchas de primer nivel, piso flotante profesional e iluminación LED en Paraná. Reservá tu turno online.">
-  <meta property="og:image" content="https://nachoaviles09.github.io/arena-parana-sport/">
+  <meta property="og:image" content="https://nachoaviles09.github.io/arena-parana-sport/813021210_18113448151858751_1309644951589697854_n.jpg">
   <meta name="twitter:card" content="summary_large_image">
 
   <!-- Favicon / Logo -->
@@ -23,7 +23,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="styles.css?v=27">
+  <link rel="stylesheet" href="styles.css?v=29">
 </head>
 <body>
 
@@ -251,17 +251,23 @@
             </select>
           </div>
 
-          <div class="field focus-effect">
-            <label>Nombre y Apellido (Responsable) *</label>
-            <input type="text" id="res-name" placeholder="Ej: Lic. Martín Gómez" required>
+         <div class="field focus-effect">
+            <label for="res-name">Nombre del Responsable *</label>
+            <input type="text" id="res-name" placeholder="Ej: Martín Pérez" required>
           </div>
-        </div>
+
+          <div class="field focus-effect" style="grid-column: 1 / -1;">
+            <label for="res-phone">Tu WhatsApp / Teléfono *</label>
+            <input type="tel" id="res-phone" placeholder="Ej: 343 4123456" required>
+          </div>
 
         <button type="submit" class="btn-submit">
+
           GENERAR SOLICITUD POR WHATSAPP
           <svg viewBox="0 0 24 24" class="btn-icon" style="margin-left: 8px;"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg>
         </button>
       </form>
+      <div id="reservation-success-box" class="reservation-success-box" style="display: none;"></div>
     </section>
 
     <!-- SECCIÓN: Ubicación y Mapa Interactivo -->
@@ -288,11 +294,11 @@
     <div class="footer-content">
       <p class="footer-brand">© 2026 <strong>Arena Paraná Sport</strong> — Juan Morath 10, Paraná, Entre Ríos.</p>
       <p class="dev-credits">
-        Diseño y desarrollo web por <a href="https://github.com" target="_blank" rel="noopener noreferrer">Ignacio Avilés Peltzer</a>
+        Diseño y desarrollo web por <a href="https://github.com" target="_blank" rel="noopener noreferrer">Ignacio Aviles Peltzer</a>
       </p>
     </div>
   </footer>
 
-  <script src="app.js?v=18"></script>
+  <script src="app.js?v=19"></script>
 </body>
 </html>

@@ -1055,3 +1055,68 @@ h1, h2, h3, h4, h5, h6 {
     transform: translateY(0);
   }
 }
+/* =========================================================
+   TARJETA DE CONFIRMACIÓN DE TURNO EN PANTALLA
+   ========================================================= */
+.reservation-success-box {
+  margin-top: 22px;
+  padding: 22px;
+  border-radius: 14px;
+  background: rgba(204, 255, 0, 0.07);
+  border: 1px solid rgba(204, 255, 0, 0.35);
+  text-align: center;
+  animation: fadeInConfirm 0.3s ease forwards;
+}
+
+.reservation-success-box .confirm-badge {
+  display: inline-block;
+  background: var(--accent, #ccff00);
+  color: #060608;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 0.85rem;
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 10px;
+}
+
+.reservation-success-box h4 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.15rem;
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+
+.reservation-success-box p {
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.82);
+  margin-bottom: 16px;
+  line-height: 1.45;
+}
+
+.btn-whatsapp-confirm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 10px;
+  background: #25D366;
+  color: #060608;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.btn-whatsapp-confirm:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+@keyframes fadeInConfirm {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
