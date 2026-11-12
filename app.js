@@ -265,7 +265,7 @@ async function generateReservation(event) {
   occupiedBookingsCache.push({ time: time, court: court });
   applyAvailabilityToSelect();
 
-  let message = `🏟️ *SOLICITUD DE TURNO #${refCode}*\n`;
+ let message = `🏟️ *SOLICITUD DE TURNO #${refCode}*\n`;
   message += `📍 _Arena Paraná Sport (Juan Morath 10)_\n\n`;
   message += `🏆 *Disciplina:* ${sport}\n`;
   message += `🏟️ *Cancha:* ${court}\n`;
@@ -274,18 +274,28 @@ async function generateReservation(event) {
   message += `⏰ *Horario:* ${time}\n`;
   message += `👤 *Responsable:* ${name}\n`;
   message += `📱 *Teléfono:* ${phone}\n\n`;
-  message += `_¡Hola! Envío mi solicitud de reserva para confirmar el turno._`;
+  message += `_¡Hola! Envío mi solicitud de reserva para consultar disponibilidad y confirmar el turno._`;
+
+  let shareMessage = `🏟️ *COMPROBANTE DE TURNO #${refCode}*\n`;
+  shareMessage += `📍 _Arena Paraná Sport (Juan Morath 10)_\n\n`;
+  shareMessage += `🏆 *Disciplina:* ${sport}\n`;
+  shareMessage += `🏟️ *Cancha:* ${court}\n`;
+  shareMessage += `📅 *Fecha:* ${date}\n`;
+  shareMessage += `⏰ *Horario:* ${time}\n`;
+  shareMessage += `👤 *Reserva a nombre de:* ${name}\n\n`;
+  shareMessage += `_¡Nos vemos en la cancha!_`;
 
   const phoneNumber = '5493434717233';
   const waUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
+  const waShareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareMessage)}`;
 
   if (successBox) {
     successBox.innerHTML = `
       <span class="confirm-badge">CÓDIGO #${refCode}</span>
       <h4>¡Turno pre-reservado en agenda!</h4>
       <p><strong>${sport}</strong> · ${court}<br>${date} a las <strong>${time}</strong></p>
-      <a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-confirm">
-        Enviar comprobante por WhatsApp
+      <a href="${waShareUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-confirm">
+        Compartir comprobante por WhatsApp
       </a>
     `;
     successBox.style.display = 'block';
