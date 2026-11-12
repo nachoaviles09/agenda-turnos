@@ -37,19 +37,47 @@ function renderSports() {
   `).join('');
 }
 
+function normalizeSelectionValue(value) {
+  return String(value)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '');
+}
+
+function setMatchingSelectValue(selectEl, desiredValue) {
+  if (!selectEl) return false;
+
+  const normalizedTarget = normalizeSelectionValue(desiredValue);
+  const option = [...selectEl.options].find(option => {
+    const optionValue = normalizeSelectionValue(option.value);
+    const optionText = normalizeSelectionValue(option.textContent);
+    return optionValue === normalizedTarget || optionText === normalizedTarget;
+  });
+
+  if (option) {
+    selectEl.value = option.value;
+    return true;
+  }
+
+  return false;
+}
+
 function selectSportFromCard(sportName) {
   const select = document.getElementById('res-sport');
   if (select) {
-    select.value = sportName;
-    document.querySelector('.reservation-section').scrollIntoView({ behavior: 'smooth' });
+    if (setMatchingSelectValue(select, sportName)) {
+      document.querySelector('.reservation-section').scrollIntoView({ behavior: 'smooth' });
+    }
   }
 }
 
 function selectModality(modalityName) {
   const selectMod = document.getElementById('res-modality');
   if (selectMod) {
-    selectMod.value = modalityName;
-    document.querySelector('.reservation-section').scrollIntoView({ behavior: 'smooth' });
+    if (setMatchingSelectValue(selectMod, modalityName)) {
+      document.querySelector('.reservation-section').scrollIntoView({ behavior: 'smooth' });
+    }
   }
 }
 

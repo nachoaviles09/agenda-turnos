@@ -787,24 +787,19 @@ h1, h2, h3, h4, h5, h6 {
   .whatsapp-float svg { width: 28px; height: 28px; }
 }
 /* =========================================================
-   OPTIMIZACIÓN RESPONSIVE (PC + CELULAR) - ARENA PARANÁ SPORT
+   AJUSTES FINALES: UBICACIÓN, RESERVAS PC Y CRÉDITOS FOOTER
    ========================================================= */
 
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
-html, body {
-  max-width: 100%;
-  overflow-x: hidden;
-}
-
-/* 1. Barra de Información (2 bloques centrados en PC: Ubicación y Horarios) */
+/* 1. Alineación exacta del ícono de Ubicación y Horarios */
 .info-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 40px;
+  gap: 36px;
   flex-wrap: wrap;
   max-width: 1100px;
   margin: 0 auto;
@@ -812,126 +807,178 @@ html, body {
 }
 
 .info-box {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-size: 0.95rem;
+  line-height: 1.35;
 }
 
-/* 2. Grilla de Deportes Habilitados (3 tarjetas de igual altura en PC) */
-#sports-grid-container {
+.info-box svg,
+.info-box .icon-svg {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  flex-shrink: 0;
+  display: block;
+  fill: var(--accent, #ccff00);
+}
+
+/* 2. Sistema de Reservas optimizado para PC */
+.reservation-section {
+  max-width: 860px;
+  margin: 0 auto 80px auto;
+}
+
+.reservation-section .field input,
+.reservation-section .field select {
+  color-scheme: dark;
+}
+
+.reservation-section .glass-effect,
+.reservation-card {
+  padding: 36px 40px;
+  border-radius: 20px;
+}
+
+.reservation-section form {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  align-items: stretch;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px 24px;
+  align-items: end;
+}
+
+/* Si los campos están dentro de un contenedor interno, mantiene las 2 columnas */
+.reservation-section .form-grid,
+.reservation-section .fields-grid {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px 24px;
+}
+
+.reservation-section .field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+  margin: 0;
+}
+
+.reservation-section .field label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--text-muted, #a1a1aa);
+}
+
+.reservation-section .field input,
+.reservation-section .field select {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  font-size: 0.95rem;
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reservation-section .field select option {
+  background-color: #16161c;
+  color: #ffffff;
+}
+
+.reservation-section .field input:focus,
+.reservation-section .field select:focus {
+  border-color: var(--accent, #ccff00);
+  box-shadow: 0 0 0 3px rgba(204, 255, 0, 0.15);
+}
+
+/* Botón de envío ocupando el ancho completo debajo de las 2 columnas */
+.reservation-section form button,
+.reservation-section form .btn-main,
+.reservation-section form .btn-submit {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-height: 52px;
+  margin-top: 8px;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+}
+
+/* 3. Pie de página con créditos de desarrollo */
+.site-footer {
+  margin-top: 60px;
+  padding: 28px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: center;
+}
+
+.footer-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footer-brand {
+  font-size: 0.9rem;
+  color: var(--text-muted, #a1a1aa);
+  margin: 0;
+}
+
+.dev-credits {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+}
+
+.dev-credits a {
+  color: var(--accent, #ccff00);
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity 0.2s ease;
+}
+
+.dev-credits a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+/* Adaptación en pantallas chicas (celulares) */
+@media (max-width: 768px) {
+  .info-container {
+    flex-direction: column;
+    gap: 12px;
+    text-align: left;
+  }
+
+  .reservation-section .glass-effect,
+  .reservation-card {
+    padding: 24px 18px;
+  }
+
+  .reservation-section form,
+  .reservation-section .form-grid,
+  .reservation-section .fields-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .reservation-section .field input,
+  .reservation-section .field select {
+    font-size: 16px;
+  }
 }
 
 .sport-card {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100%;
-  padding: 28px 24px;
-}
-
-.sport-meta {
-  margin-top: 24px;
-  width: 100%;
-}
-
-/* 3. Formulario de Reservas (2 columnas ordenadas en PC) */
-.reservation-section form {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 18px;
-}
-
-.reservation-section form button[type="submit"],
-.reservation-section .full-width {
-  grid-column: 1 / -1;
-}
-
-.field input,
-.field select {
-  width: 100%;
-  min-height: 48px;
-  font-size: 16px; /* Evita el zoom automático al tocar un campo en iPhone */
-  border-radius: 10px;
-}
-
-/* Normaliza el ancho y alto del calendario en Safari y Chrome móvil */
-input[type="date"] {
-  -webkit-appearance: none;
-  appearance: none;
-  display: block;
-  width: 100%;
-}
-
-/* =========================================================
-   ADAPTACIÓN PARA CELULARES Y TABLETS (Menos de 768px)
-   ========================================================= */
-@media (max-width: 768px) {
-  /* Barra de navegación compacta */
-  header nav, .navbar {
-    padding: 12px 16px;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .nav-item {
-    font-size: 0.85rem;
-    padding: 6px 10px;
-  }
-
-  /* Escala fluida de títulos para que no se corten palabras */
-  h1 {
-    font-size: clamp(1.9rem, 7.5vw, 2.8rem) !important;
-    line-height: 1.15;
-  }
-
-  h2, h3 {
-    font-size: clamp(1.4rem, 5.5vw, 1.9rem) !important;
-  }
-
-  /* Barra de Ubicación y Horarios apilada */
-  .info-container {
-    flex-direction: column;
-    gap: 14px;
-    text-align: center;
-    padding: 16px;
-  }
-
-  .info-box {
-    justify-content: center;
-    font-size: 0.9rem;
-  }
-
-  /* Tarjetas de deportes en 1 columna cómoda */
-  #sports-grid-container {
-    grid-template-columns: 1fr;
-    gap: 18px;
-  }
-
-  .sport-card {
-    padding: 22px 18px;
-  }
-
-  /* Sección Instagram (Agenda) */
-  #agenda .glass-effect {
-    padding: 28px 18px !important;
-  }
-
-  #agenda .btn-main {
-    width: 100%;
-    max-width: 320px;
-    font-size: 0.9rem;
-    padding: 14px 18px;
-  }
-
-  /* Formulario de reservas en 1 sola columna */
-  .reservation-section form {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
 }
