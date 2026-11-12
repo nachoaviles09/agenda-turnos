@@ -982,3 +982,76 @@ h1, h2, h3, h4, h5, h6 {
   flex-direction: column;
   justify-content: space-between;
 }
+
+/* =========================================================
+   MENÚ MÓVIL DESPLEGABLE
+   ========================================================= */
+.menu-toggle {
+  display: none;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--accent, #ccff00);
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.menu-toggle:hover {
+  border-color: var(--accent, #ccff00);
+}
+
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: flex;
+  }
+
+  .nav {
+    display: none;
+  }
+
+  .nav.open {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(6, 6, 8, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 20px;
+    gap: 14px;
+    border-bottom: 1px solid rgba(204, 255, 0, 0.25);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.7);
+    animation: slideDownMenu 0.25s ease forwards;
+  }
+
+  .nav.open .nav-item {
+    font-size: 1rem;
+    padding: 10px 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .nav.open .nav-btn {
+    text-align: center;
+    padding: 14px;
+    margin-top: 4px;
+    font-size: 0.95rem;
+  }
+}
+
+@keyframes slideDownMenu {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

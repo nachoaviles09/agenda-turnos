@@ -171,10 +171,47 @@ function initScrollSpy() {
   });
 }
 
+function initMobileMenu() {
+  const toggleBtn = document.getElementById('menu-toggle');
+  const navMenu = document.getElementById('main-nav');
+  const iconOpen = document.getElementById('menu-icon-open');
+  const iconClose = document.getElementById('menu-icon-close');
+
+  if (!toggleBtn || !navMenu) return;
+
+  function setMenuState(isOpen) {
+    navMenu.classList.toggle('open', isOpen);
+    toggleBtn.setAttribute('aria-expanded', isOpen);
+    if (iconOpen && iconClose) {
+      iconOpen.style.display = isOpen ? 'none' : 'block';
+      iconClose.style.display = isOpen ? 'block' : 'none';
+    }
+  }
+
+  toggleBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isCurrentlyOpen = navMenu.classList.contains('open');
+    setMenuState(!isCurrentlyOpen);
+  });
+
+  // Cerrar el menú automáticamente al tocar cualquier enlace
+  navMenu.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => setMenuState(false));
+  });
+
+  // Cerrar si toca fuera del encabezado
+  document.addEventListener('click', (e) => {
+    if (navMenu.classList.contains('open') && !e.target.closest('.header')) {
+      setMenuState(false);
+    }
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   renderSports();
   initScrollReveal();
   initScrollSpy();
+  initMobileMenu();
 
   const dateInput = document.getElementById('res-date');
   if (dateInput) {
