@@ -1,19 +1,19 @@
 const sportsData = [
   {
     id: 'futsal',
-    name: 'Futsal Profesional',
+    name: 'Futsal',
     icon: `<svg viewBox="0 0 24 24" class="sport-icon-box"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 3.3l1.35-.95c1.82.56 3.37 1.76 4.38 3.34l-.39 1.34-1.35.46L13 6.7V5.3zm-3.35-.95L11 5.3v1.4L7.01 9.49l-1.35-.46-.39-1.34c1.01-1.58 2.56-2.78 4.38-3.34zM7.08 17.11l-1.14.1C4.73 15.81 4 13.99 4 12c0-.12.01-.23.02-.35l1-.73 1.38.48 1.46 4.34-.78 1.37zm7.42 2.48c-.79.26-1.63.41-2.5.41s-1.71-.15-2.5-.41l-.69-1.49.64-1.1h5.11l.64 1.1-.7 1.49zM14.27 15H9.73l-1.35-4.02L12 8.44l3.63 2.54L14.27 15zm3.79 2.21l-1.14-.1-.79-1.37 1.46-4.34 1.39-.47 1 .73c.01.11.02.22.02.34 0 1.99-.73 3.81-1.94 5.21z"/></svg>`,
     desc: 'Cancha reglamentaria con superficie de alta calidad y excelente rebote.'
   },
   {
     id: 'basquet',
-    name: 'Básquet Oficial',
+    name: 'Básquet',
     icon: `<svg viewBox="0 0 24 24" class="sport-icon-box"><path d="M17.09 11h4.86c-.16-1.61-.71-3.11-1.54-4.4-1.42 1.15-2.66 2.66-3.32 4.4zM6.91 11c-.66-1.74-1.9-3.25-3.32-4.4C2.76 7.89 2.21 9.39 2.05 11h4.86zm8.14 0c.72-2.16 2.23-4.02 4.13-5.26C17.44 3.56 14.88 2.18 12 2.03V11h3.05zm-6.1 0H12V2.03C9.12 2.18 6.56 3.56 4.82 5.74c1.9 1.24 3.41 3.1 4.13 5.26zM8.95 13c-.72 2.16-2.23 4.02-4.13 5.26 1.74 2.18 4.3 3.56 7.18 3.71V13H8.95zm-2.04 0H2.05c.16 1.61.71 3.11 1.54 4.4 1.42-1.15 2.66-2.66 3.32-4.4zm10.18 0c.66 1.74 1.9 3.25 3.32 4.4.83-1.29 1.38-2.79 1.54-4.4h-4.86zm-2.04 0H12v8.97c2.88-.15 5.44-1.53 7.18-3.71-1.9-1.24-3.41-3.1-4.13-5.26z"/></svg>`,
     desc: 'Piso flotante profesional, aros rebatibles y marcación oficial.'
   },
   {
     id: 'voley',
-    name: 'Vóley Reglamentario',
+    name: 'Vóley',
     icon: `<svg viewBox="0 0 24 24" class="sport-icon-box" style="fill: none; stroke: var(--accent); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;"><circle cx="12" cy="12" r="9.5"/><path d="M12 12 Q 9.5 7.5 9.2 2.9"/><path d="M12 12 Q 16.8 11.8 21.2 14.3"/><path d="M12 12 Q 9.7 16.5 5.5 18.9"/><path d="M6.2 4.5 Q 6.4 8.5 8.2 12.2"/><path d="M13.2 2.6 Q 14.2 7.5 17.2 11.8"/><path d="M17.8 17.2 Q 14 17.2 9.8 15.8"/></svg>`,
     desc: 'Espacio óptimo con altura libre superior y red profesional ajustable.'
   }
