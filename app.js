@@ -49,9 +49,9 @@ function setMatchingSelectValue(selectEl, desiredValue) {
   if (!selectEl) return false;
 
   const normalizedTarget = normalizeSelectionValue(desiredValue);
-  const option = [...selectEl.options].find(option => {
-    const optionValue = normalizeSelectionValue(option.value);
-    const optionText = normalizeSelectionValue(option.textContent);
+  const option = [...selectEl.options].find(opt => {
+    const optionValue = normalizeSelectionValue(opt.value);
+    const optionText = normalizeSelectionValue(opt.textContent);
     return optionValue === normalizedTarget || optionText === normalizedTarget;
   });
 
@@ -65,30 +65,90 @@ function setMatchingSelectValue(selectEl, desiredValue) {
 
 function selectSportFromCard(sportName) {
   const select = document.getElementById('res-sport');
-  if (select) {
-    if (setMatchingSelectValue(select, sportName)) {
-      document.querySelector('.reservation-section').scrollIntoView({ behavior: 'smooth' });
-    }
+  if (select && setMatchingSelectValue(select, sportName)) {
+    document.querySelector('.reservation-section').scrollIntoView({ behavior: 'smooth' });
   }
 }
 
 function selectModality(modalityName) {
   const selectMod = document.getElementById('res-modality');
-  if (selectMod) {
-    if (setMatchingSelectValue(selectMod, modalityName)) {
-      document.querySelector('.reservation-section').scrollIntoView({ behavior: 'smooth' });
+  if (selectMod && setMatchingSelectValue(selectMod, modalityName)) {
+    document.querySelector('.reservation-section').scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyLsWbd-41slJBYV8GyIvJyOI-VgLHJMY3Iutbdw3Jil3hOEyR1k7rFigZ3sBsGQYM/exec';
+let occupiedBookingsCache = [];
+
+function isSlotBlocked(bookedCourt, selectedCourt, bookedTime, optionTime) {
+  if (bookedTime !== optionTime) return false;
+  if (selectedCourt === 'Cancha Principal / Completa') return true;
+  if (bookedCourt === 'Cancha Principal / Completa') return true;
+  return bookedCourt === selectedCourt;
+}
+
+function applyAvailabilityToSelect() {
+  const timeSelect = document.getElementById('res-time');
+  const courtSelect = document.getElementById('res-court');
+  if (!timeSelect || !courtSelect) return;
+
+  const selectedCourt = courtSelect.value;
+  let firstAvailableIndex = -1;
+
+  Array.from(timeSelect.options).forEach((option, index) => {
+    const baseTime = option.value;
+    const occupied = occupiedBookingsCache.some(b =>
+      isSlotBlocked(b.court, selectedCourt, b.time, baseTime)
+    );
+
+    option.disabled = occupied;
+    option.textContent = occupied ? `${baseTime} (OCUPADO)` : baseTime;
+
+    if (!occupied && firstAvailableIndex === -1) {
+      firstAvailableIndex = index;
+    }
+  });
+
+  if (timeSelect.options[timeSelect.selectedIndex]?.disabled && firstAvailableIndex !== -1) {
+    timeSelect.selectedIndex = firstAvailableIndex;
+  }
+}
+
+async function fetchAvailabilityForDate(dateValue) {
+  const timeSelect = document.getElementById('res-time');
+  const submitBtn = document.querySelector('#reservation-form button[type="submit"]');
+  if (!dateValue || !timeSelect) return;
+
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.style.opacity = '0.6';
+  }
+
+  try {
+    const response = await fetch(`${SCRIPT_URL}?date=${encodeURIComponent(dateValue)}`);
+    const result = await response.json();
+    occupiedBookingsCache = Array.isArray(result.bookings) ? result.bookings : [];
+  } catch (error) {
+    console.error('No se pudo consultar disponibilidad:', error);
+    occupiedBookingsCache = [];
+  } finally {
+    applyAvailabilityToSelect();
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.style.opacity = '1';
     }
   }
 }
 
-function generateReservation(event) {
+async function generateReservation(event) {
   event.preventDefault();
 
   const sport = document.getElementById('res-sport').value;
   const court = document.getElementById('res-court').value;
   const modality = document.getElementById('res-modality').value;
   const date = document.getElementById('res-date').value;
-  const time = document.getElementById('res-time').value;
+  const timeSelect = document.getElementById('res-time');
+  const time = timeSelect.value;
   const name = document.getElementById('res-name').value.trim();
 
   if (!date || !name) {
@@ -96,7 +156,11 @@ function generateReservation(event) {
     return;
   }
 
-  // Generar código de referencia único para sincronizar Excel y WhatsApp
+  if (timeSelect.options[timeSelect.selectedIndex]?.disabled) {
+    alert('Ese horario ya se encuentra ocupado. Por favor elegí otro turno disponible.');
+    return;
+  }
+
   const refCode = 'APS-' + Math.floor(1000 + Math.random() * 9000);
 
   const reservationData = {
@@ -109,14 +173,25 @@ function generateReservation(event) {
     time: time
   };
 
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbyLsWbd-41slJBYV8GyIvJyOI-VgLHJMY3Iutbdw3Jil3hOEyR1k7rFigZ3sBsGQYM/exec';
+  try {
+    const response = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(reservationData)
+    });
+    const result = await response.json();
 
-  fetch(scriptURL, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify(reservationData)
-  }).catch(error => console.error('Error al registrar:', error));
+    if (result.status === 'duplicate') {
+      alert('¡Ups! Alguien acaba de reservar ese mismo turno recién. Actualizamos los horarios disponibles.');
+      fetchAvailabilityForDate(date);
+      return;
+    }
+  } catch (error) {
+    console.error('Error al registrar:', error);
+  }
+
+  occupiedBookingsCache.push({ time: time, court: court });
+  applyAvailabilityToSelect();
 
   let message = `🏟️ *SOLICITUD DE TURNO #${refCode}*\n`;
   message += `📍 _Arena Paraná Sport (Juan Morath 10)_\n\n`;
@@ -128,7 +203,7 @@ function generateReservation(event) {
   message += `👤 *Responsable:* ${name}\n\n`;
   message += `_¡Hola! Envío mi solicitud de reserva para consultar disponibilidad y confirmar el turno._`;
 
-  const phoneNumber = '5493434717233'; 
+  const phoneNumber = '5493434717233';
   const waUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
 
   window.open(waUrl, '_blank');
@@ -194,18 +269,26 @@ function initMobileMenu() {
     setMenuState(!isCurrentlyOpen);
   });
 
-  // Cerrar el menú automáticamente al tocar cualquier enlace
   navMenu.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', () => setMenuState(false));
   });
 
-  // Cerrar si toca fuera del encabezado
   document.addEventListener('click', (e) => {
     if (navMenu.classList.contains('open') && !e.target.closest('.header')) {
       setMenuState(false);
     }
   });
 }
+
+if ('scrollRestoration' in history) {
+  history.scrollRestoration = 'manual';
+}
+
+window.addEventListener('load', () => {
+  if (!window.location.hash) {
+    window.scrollTo(0, 0);
+  }
+});
 
 document.addEventListener('DOMContentLoaded', () => {
   renderSports();
@@ -214,9 +297,22 @@ document.addEventListener('DOMContentLoaded', () => {
   initMobileMenu();
 
   const dateInput = document.getElementById('res-date');
+  const courtSelect = document.getElementById('res-court');
+
   if (dateInput) {
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toLocaleDateString('en-CA');
     dateInput.value = today;
     dateInput.min = today;
+
+    fetchAvailabilityForDate(today);
+    dateInput.addEventListener('change', (e) => {
+      fetchAvailabilityForDate(e.target.value);
+    });
+  }
+
+  if (courtSelect) {
+    courtSelect.addEventListener('change', () => {
+      applyAvailabilityToSelect();
+    });
   }
 });
