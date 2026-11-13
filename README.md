@@ -1,187 +1,98 @@
-# 🏟️ Arena Paraná Sport — Plataforma Web y Gestión de Turnos
+# 🏟️ Arena Paraná Sport - Sistema Integrado de Reservas
 
-Plataforma web oficial y sistema automatizado de reservas para el complejo deportivo **Arena Paraná Sport** (Juan Morath 10, Esq. Almafuerte, Paraná, Entre Ríos).
+Plataforma web personalizada de gestión de turnos, control de acceso y catálogo comercial para el complejo deportivo **Arena Paraná Sport**. 
 
-El proyecto está diseñado bajo una arquitectura **100% serverless y sin costos fijos de infraestructura**, combinando un frontend estático de alto rendimiento con **Google Apps Script** y **Google Sheets** como base de datos automatizada, e integración directa con **WhatsApp** e **Instagram**.
+El sistema permite a los jugadores consultar disponibilidad en tiempo real y agendar turnos de forma autónoma, mientras que el personal del complejo gestiona los ingresos mediante un panel de control rápido sincronizado con una base de datos automatizada en Google Sheets.
 
 ---
 
-## 🛠️ Stack Tecnológico
+## 🚀 Arquitectura y Tecnologías
 
-* **Frontend:** HTML5 semántico, CSS3 moderno (Variables CSS, Flexbox, CSS Grid, Glassmorphism) y JavaScript Vanilla (ES6+).
-* **Alojamiento:** GitHub Pages con soporte para dominio personalizado y certificado SSL.
-* **Backend / API:** Google Apps Script (Web App desplegada como endpoint `/exec`).
-* **Base de Datos:** Google Sheets con automatización de pestañas mensuales y ordenamiento cronológico.
-* **Integraciones:** WhatsApp API (`api.whatsapp.com/send`), Instagram (`@arenaparanasport`) y Google Maps Embed.
+El proyecto sigue una arquitectura **Serverless** ligera, eliminando costos fijos de alojamiento web y bases de datos tradicionales.
+
+*   **Frontend (Cliente & Recepción):** HTML5, CSS3 (Vanilla), JavaScript (ES6+). Alojado en **GitHub Pages** (o dominio personalizado `.site`).
+*   **Backend (API):** **Google Apps Script** (`Code.gs`). Procesa las peticiones `GET` (disponibilidad) y `POST` (reservas/check-in).
+*   **Base de Datos:** **Google Sheets**. Actúa como CMS y base de datos relacional por mes.
+*   **Notificaciones:** API nativa de **WhatsApp** (Redirección con texto preformateado).
+
+---
+
+## 🎯 Características Principales
+
+### 1. Motor de Reservas (Frontend)
+*   **Catálogo Visual:** Tarjetas de disciplinas (Futsal, Básquet, Vóley) con descripciones e íconos.
+*   **Disponibilidad en Tiempo Real:** Filtra turnos pasados del día actual y bloquea horarios ya ocupados.
+*   **Reglas de Negocio Deportivas (Cross-Filtering):** 
+    *   Si se elige **Futsal**, el sistema bloquea automáticamente las opciones de canchas parciales (Cancha 1 y 2) obligando a reservar la *Cancha Principal / Completa*.
+    *   La reserva de una *Cancha Parcial* bloquea la disponibilidad de la *Cancha Completa* en ese mismo horario, y viceversa.
+*   **Comprobante Inteligente:** Tras reservar, el formulario se limpia automáticamente (para evitar duplicados) y genera una tarjeta de confirmación con el código único `#APS-XXXX` y un botón para enviar los datos por WhatsApp.
+
+### 2. Panel de Recepción (Check-in)
+*   **Portal de Ingreso (`ingreso.html`):** Interfaz oculta optimizada para celulares y tablets en mostrador.
+*   **Validación Express:** Input numérico con soporte para la tecla `Enter`.
+*   **Estadísticas del Día:** Muestra contadores en vivo de turnos *Confirmados* y *Pendientes* del día actual.
+*   **Agenda Cronológica:** Renderiza la lista de turnos del día ordenados por horario de inicio, indicando responsable, cancha y estado.
+*   **Prevención de Fraudes:** Bloquea códigos cancelados, códigos de otros días o códigos que ya ingresaron previamente.
+
+### 3. Automatización de Base de Datos (Backend)
+*   **Generación Mensual Automática:** Si entra un turno de un mes nuevo (ej. Enero 2027), el script crea la pestaña automáticamente con cabeceras formateadas y paneles inmovilizados.
+*   **Validación de Datos (Desplegables):** Las pestañas nuevas se generan con menús desplegables integrados (`DataValidation`) para Horarios, Canchas y Estados, garantizando que la carga manual de turnos fijos no tenga errores tipográficos.
+*   **Protección Anti-Superposición (LockService):** Implementa `LockService.getScriptLock()` para evitar que dos usuarios reserven el mismo horario en el mismo milisegundo.
 
 ---
 
 ## 📂 Estructura del Proyecto
 
 ```text
-/
-├── index.html                                            # Estructura principal, SEO, Open Graph y formularios
-├── styles.css                                            # Estilos globales, variables de marca y diseño responsive
-├── app.js                                                # Lógica de UI, renderizado dinámico, reservas y fetch API
-├── 813021210_18113448151858751_1309644951589697854_n.jpg # Logo oficial y favicon
-├── igexport-Dd3uJvZRFdY.mp4                              # Video recorrido: Vestuarios y sanitarios
-├── igexport-Dd9oF_IStvF.mp4                              # Video recorrido: Cancha principal y tribunas
-└── README.md                                             # Documentación técnica del proyecto
+arena-parana-sport/
+├── index.html       # Landing page y formulario de reservas
+├── ingreso.html     # Panel de control de acceso para la recepción
+├── styles.css       # Hoja de estilos principal (variables CSS, UI/UX)
+├── app.js           # Lógica del frontend (fetch, UI, validaciones)
+├── Code.gs          # (Ubicado en Google Apps Script) Backend API
+└── README.md        # Documentación del proyecto
 ```
 
 ---
 
-## ⚙️ Arquitectura y Flujo de Datos
+## ⚙️ Guía de Instalación y Despliegue
 
-El sistema evita la necesidad de un servidor tradicional mediante el siguiente flujo:
+### Paso 1: Configurar Google Sheets y Apps Script
+1. Crear una nueva hoja de cálculo en Google Sheets (Idealmente desde la cuenta del cliente).
+2. Ir a `Extensiones > Apps Script`.
+3. Borrar el código por defecto y pegar el contenido completo de `Code.gs`.
+4. Guardar (icono de disquete).
+5. Ir a **Implementar > Nueva implementación**.
+    *   Tipo: *Aplicación web*.
+    *   Ejecutar como: *Yo*.
+    *   Quién tiene acceso: *Cualquier persona*.
+6. Autorizar los permisos de Google.
+7. Copiar la **URL de la aplicación web** (Ej: `https://script.google.com/macros/s/.../exec`).
 
-1. **Captura en Frontend (`app.js`):** El usuario completa el formulario de reserva (disciplina, cancha, modalidad, fecha, bloque horario de 1 hora y nombre del responsable).
-2. **Generación de ID Único:** Se genera un código de referencia aleatorio con formato `#APS-XXXX` (ej. `#APS-4821`) para vincular el mensaje de chat con el registro en la base de datos.
-3. **Envío Asíncrono a Google Sheets:** Mediante `fetch()`, se envía un payload JSON al endpoint de Google Apps Script.
-4. **Redirección a WhatsApp:** En paralelo, se abre una pestaña hacia la API de WhatsApp con un mensaje prearmado que contiene el código `#APS-XXXX` y todos los detalles del turno.
-5. **Procesamiento en Backend (`doPost`):** Google Apps Script recibe el JSON, detecta el mes del turno, crea la pestaña mensual si no existe, inserta la fila y reordena toda la hoja cronológicamente.
+*(Nota: Para futuras actualizaciones del código `.gs`, usar siempre **Implementar > Administrar implementaciones > Editar (Lápiz) > Nueva versión** para mantener la misma URL).*
 
----
+### Paso 2: Configurar el Frontend
+1. Abrir `app.js` y buscar la constante `SCRIPT_URL`. Pegar allí la URL obtenida en el Paso 1.
+2. Abrir `app.js` y buscar la variable `phoneNumber` (dentro de la función `generateReservation`). Actualizar al número de WhatsApp oficial del complejo.
+3. Abrir `ingreso.html` y actualizar también la constante `SCRIPT_URL`.
 
-## 💻 Guía del Frontend (`index.html`, `styles.css`, `app.js`)
-
-### ⚠️ Regla Crítica: Control de Caché (Cache Busting)
-Dado que los navegadores móviles (especialmente dentro de Instagram/WhatsApp) cachean agresivamente los archivos estáticos, **`index.html` utiliza parámetros de versión en las importaciones**:
-
-```html
-<link rel="stylesheet" href="styles.css?v=24">
-<script src="app.js?v=16"></script>
-```
-> **Importante:** Cada vez que modifiques `styles.css` o `app.js`, **incrementá el número de versión** (`?v=25`, `?v=17`, etc.) en `index.html` para garantizar que todos los usuarios vean los cambios de inmediato.
-
-### Funciones Principales en `app.js`
-
-* `renderSports()`: Renderiza dinámicamente las tarjetas de disciplinas (`Futsal`, `Básquet`, `Vóley`) a partir del array `sportsData`. *(Nota: Los precios están intencionalmente omitidos en estas tarjetas para centralizar las tarifas en su propia sección).*
-* `selectSportFromCard(sportName)` / `selectModality(modalityName)`: Autocompletan los `<select>` del formulario y hacen scroll suave hasta `#reservas`.
-* `generateReservation(event)`: Valida campos, genera `#APS-XXXX`, dispara el `POST` hacia `scriptURL` y abre WhatsApp.
-* `initMobileMenu()`: Controla el menú hamburguesa en viewports menores a `768px`, cerrándolo automáticamente al seleccionar un enlace o tocar fuera del header.
-* `initScrollReveal()` & `initScrollSpy()`: Manejan las animaciones de aparición (`IntersectionObserver`) y el resaltado activo de la barra de navegación.
-
-### Variables de Configuración Rápida en `app.js`
-Si necesitás cambiar el destino de las reservas o el número de contacto, editá estas constantes dentro de `generateReservation()`:
-* `scriptURL`: URL del Web App de Google Apps Script (`/exec`).
-* `phoneNumber`: Número oficial de WhatsApp en formato internacional sin `+` (ej. `'5493434717233'`).
-
-*(Recordá actualizar también el atributo `href` y `data-whatsapp-number` del botón flotante `.whatsapp-float` en `index.html`).*
+### Paso 3: Despliegue en GitHub Pages
+1. Subir los archivos (`index.html`, `ingreso.html`, `styles.css`, `app.js`) a un repositorio en GitHub.
+2. Ir a `Settings > Pages`.
+3. Seleccionar la rama `main` y guardar.
+4. (Opcional) Configurar el dominio personalizado `.site` en la sección de *Custom domain* y ajustar los DNS en el proveedor de dominios.
 
 ---
 
-## 🗄️ Backend: Google Apps Script (`Code.gs`)
+## 🛠️ Mantenimiento y Operación Diaria
 
-El script está vinculado directamente como **script contenedor** dentro de la planilla de Google Sheets (*Extensiones > Apps Script*), por lo que utiliza `SpreadsheetApp.getActiveSpreadsheet()` sin depender de IDs externos.
-
-### Código Fuente de Producción (Respaldo)
-
-```javascript
-function doPost(e) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var data = {};
-    if (e && e.postData && e.postData.contents) {
-      data = JSON.parse(e.postData.contents);
-    }
-
-    // 1. Determinar pestaña según mes y año del turno
-    var meses = [
-      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-    ];
-    
-    var fechaTurnoObj = new Date();
-    var nombrePestana = 'Turnos';
-
-    if (data.date && data.date.indexOf('-') !== -1) {
-      var partes = data.date.split('-'); // [YYYY, MM, DD]
-      var anio = parseInt(partes[0], 10);
-      var mesIndex = parseInt(partes[1], 10) - 1;
-      var dia = parseInt(partes[2], 10);
-      
-      fechaTurnoObj = new Date(anio, mesIndex, dia);
-      nombrePestana = meses[mesIndex] + ' ' + anio; // Ej: "Noviembre 2026"
-    }
-
-    // 2. Obtener o crear pestaña mensual con formato corporativo
-    var sheet = ss.getSheetByName(nombrePestana);
-    if (!sheet) {
-      sheet = ss.insertSheet(nombrePestana);
-      
-      var headers = [
-        'Fecha de Registro',
-        'Código',
-        'Fecha del Turno',
-        'Horario',
-        'Cancha',
-        'Disciplina',
-        'Modalidad',
-        'Responsable',
-        'Estado'
-      ];
-      sheet.appendRow(headers);
-      
-      var headerRange = sheet.getRange(1, 1, 1, headers.length);
-      headerRange.setBackground('#16161c')
-                 .setFontColor('#ccff00')
-                 .setFontWeight('bold')
-                 .setHorizontalAlignment('center');
-      sheet.setFrozenRows(1);
-    }
-
-    // 3. Insertar registro
-    sheet.appendRow([
-      new Date(),
-      data.refCode || '-',
-      fechaTurnoObj,
-      data.time || '-',
-      data.court || '-',
-      data.sport || '-',
-      data.modality || '-',
-      data.name || 'Sin nombre',
-      'Pendiente'
-    ]);
-
-    // 4. Formatear y ordenar cronológicamente (Fecha del Turno -> Horario)
-    var lastRow = sheet.getLastRow();
-    if (lastRow > 1) {
-      sheet.getRange(2, 1, lastRow - 1, 1).setNumberFormat('dd/MM/yyyy HH:mm');
-      sheet.getRange(2, 3, lastRow - 1, 1).setNumberFormat('dd/MM/yyyy');
-      sheet.getRange(2, 1, lastRow - 1, 9).setHorizontalAlignment('center');
-      
-      sheet.getRange(2, 1, lastRow - 1, 9).sort([
-        {column: 3, ascending: true},
-        {column: 4, ascending: true}
-      ]);
-    }
-
-    sheet.autoResizeColumns(1, 9);
-
-    return ContentService.createTextOutput("OK");
-  } catch(err) {
-    return ContentService.createTextOutput("ERROR: " + err.toString());
-  }
-}
-```
-
-### Notas Técnicas sobre CORS y Despliegue
-1. **Por qué se usa `mode: 'no-cors'` y `text/plain`:** Google Apps Script realiza redirecciones `302` en respuestas `POST` que provocan bloqueos CORS en navegadores si se envía `application/json`. Al enviar el cuerpo serializado como `text/plain;charset=utf-8` con `mode: 'no-cors'`, el navegador ejecuta la petición sin *preflight* y `e.postData.contents` recibe el JSON intacto.
-2. **Cómo actualizar el Apps Script sin romper la URL:** Si se edita el script en el futuro, ir a **Implementar > Gestionar implementaciones**, hacer clic en el ícono de **Editar (lápiz)** y seleccionar **Nueva versión** en el desplegable. Esto actualiza el código manteniendo exactamente la misma URL `/exec`.
-3. **Permisos:** La aplicación web debe estar configurada como *Ejecutar como: Yo (propietario de la planilla)* y *Quién tiene acceso: Cualquier persona*.
+*   **Gestión de Turnos Manuales:** El personal de recepción debe usar los menús desplegables en Google Sheets para cargar turnos presenciales o telefónicos. Si la fecha, horario o cancha no coincide exactamente con el formato, el sistema no lo bloqueará en la web.
+*   **Ausencias (No-Show):** Si un cliente reserva por la web (estado *Pendiente*) pero no envía el mensaje de WhatsApp tras un tiempo prudencial (ej. 15-30 minutos), el encargado debe cambiar el estado en Google Sheets a **Cancelado** para liberar inmediatamente el horario en la web.
+*   **Actualización de Caché:** Al realizar cambios en `app.js` o `styles.css`, se recomienda actualizar el query string en `index.html` (ej. `<script src="app.js?v=23"></script>`) para forzar la actualización en los dispositivos móviles de los clientes frecuentes.
 
 ---
 
-## 🔧 Tareas Frecuentes de Mantenimiento
+## 👨‍💻 Autor
 
-* **Actualizar tarifas:** Modificar los montos visibles en la sección `#precios` y los `<option>` de `#res-modality` dentro de `index.html`, además de los parámetros de `selectModality(...)`.
-* **Actualizar vista previa en redes (Open Graph):** Verificar que la meta etiqueta `<meta property="og:image" content="...">` en el `<head>` de `index.html` apunte a la URL absoluta (`https://...`) del dominio activo.
-* **Sincronización de nombres de deportes:** Los `value` de `<select id="res-sport">` en `index.html` (`Futsal`, `Básquet`, `Vóley`) deben coincidir exactamente con la propiedad `name` de los objetos en `sportsData` dentro de `app.js`.
-
----
-
-## 👨‍💻 Créditos
-
-* **Diseño, Arquitectura y Desarrollo:** Ignacio Avilés Peltzer
-* **Cliente:** Arena Paraná Sport — Paraná, Entre Ríos, Argentina.
+Desarrollado por **Ignacio Avilés Peltzer**
+*Soluciones Web y Automatización Comercial*
