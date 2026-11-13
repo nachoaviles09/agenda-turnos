@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control de Acceso | Arena Paraná Sport</title>
+  <style>
+    body {
+      background-color: #060608;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .checkin-box {
+      background: rgba(22, 22, 28, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    h2 { margin-top: 0; color: #ccff00; font-family: 'Montserrat', sans-serif; }
+    input {
+      width: 100%;
+      padding: 16px;
+      font-size: 1.2rem;
+      text-align: center;
+      background: rgba(0,0,0,0.5);
+      border: 2px solid #ccff00;
+      color: #fff;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      outline: none;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      padding: 16px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      background: #ccff00;
+      color: #000;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+    #result-msg {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      font-weight: bold;
+      display: none;
+    }
+    .status-ok { background: rgba(37, 211, 102, 0.2); border: 1px solid #25d366; color: #25d366; }
+    .status-error { background: rgba(255, 59, 48, 0.2); border: 1px solid #ff3b30; color: #ff3b30; }
+    .status-warning { background: rgba(255, 204, 0, 0.2); border: 1px solid #ffcc00; color: #ffcc00; }
+  </style>
+</head>
+<body>
+
+  <div class="checkin-box">
+    <h2>CONTROL DE INGRESO</h2>
+    <p style="color: #a0a0ab; font-size: 0.9rem;">Ingrese el código del turno (Ej: 4821)</p>
+    
+    <input type="text" id="code-input" placeholder="XXXX" autocomplete="off">
+    <button onclick="validarIngreso()" id="btn-validar">VALIDAR TURNO</button>
+    
+    <div id="result-msg"></div>
+  </div>
+
+  <script>
+    // IMPORTANTE: Pegá acá tu URL exacta de Google Apps Script
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyLsWbd-41slJBYV8GyIvJyOI-VgLHJMY3Iutbdw3Jil3hOEyR1k7rFigZ3sBsGQYM/exec';
+
+    async function validarIngreso() {
+      const codeInput = document.getElementById('code-input').value.trim();
+      const resultBox = document.getElementById('result-msg');
+      const btn = document.getElementById('btn-validar');
+
+      if (!codeInput) return;
+
+      // Estado de carga
+      btn.textContent = 'BUSCANDO...';
+      btn.disabled = true;
+      resultBox.style.display = 'none';
+
+      try {
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'checkin', code: codeInput })
+        });
+        
+        const result = await response.json();
+        
+        resultBox.style.display = 'block';
+        resultBox.className = ''; // Limpiar clases
+
+        if (result.status === 'ok') {
+          resultBox.classList.add('status-ok');
+          resultBox.innerHTML = `${result.message}<br><span style="font-size:0.85rem; color:#fff;">${result.details}</span>`;
+          document.getElementById('code-input').value = ''; // Limpia el input para el próximo
+        } else if (result.status === 'warning') {
+          resultBox.classList.add('status-warning');
+          resultBox.innerHTML = result.message;
+        } else {
+          resultBox.classList.add('status-error');
+          resultBox.innerHTML = result.message;
+        }
+
+      } catch (error) {
+        resultBox.style.display = 'block';
+        resultBox.classList.add('status-error');
+        resultBox.innerHTML = 'Error de conexión. Reintente.';
+      } finally {
+        btn.textContent = 'VALIDAR TURNO';
+        btn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>
