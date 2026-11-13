@@ -4,7 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Control de Acceso | Arena Paraná Sport</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
   <style>
+    * { box-sizing: border-box; }
     body {
       background-color: #060608;
       color: #fff;
@@ -12,71 +16,171 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      height: 100vh;
+      min-height: 100vh;
       margin: 0;
+      padding: 24px 16px;
     }
     .checkin-box {
-      background: rgba(22, 22, 28, 0.9);
+      background: rgba(22, 22, 28, 0.92);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 40px;
+      padding: 32px 24px;
       border-radius: 20px;
       text-align: center;
-      width: 90%;
-      max-width: 400px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
     }
-    h2 { margin-top: 0; color: #ccff00; font-family: 'Montserrat', sans-serif; }
+    h2 {
+      margin: 0 0 6px 0;
+      color: #ccff00;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.35rem;
+    }
+    .stats-bar {
+      display: flex;
+      gap: 10px;
+      margin: 18px 0 22px 0;
+    }
+    .stat-pill {
+      flex: 1;
+      padding: 10px 8px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .stat-pill strong {
+      display: block;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.25rem;
+    }
+    .stat-pill span {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #a0a0ab;
+    }
+    .stat-ok strong { color: #25d366; }
+    .stat-pend strong { color: #ffcc00; }
+
     input {
       width: 100%;
       padding: 16px;
-      font-size: 1.2rem;
+      font-size: 1.3rem;
+      font-weight: 700;
       text-align: center;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0, 0, 0, 0.5);
       border: 2px solid #ccff00;
       color: #fff;
       border-radius: 12px;
-      margin-bottom: 20px;
+      margin-bottom: 14px;
       text-transform: uppercase;
       outline: none;
-      box-sizing: border-box;
     }
     button {
       width: 100%;
       padding: 16px;
-      font-size: 1.1rem;
-      font-weight: bold;
+      font-size: 1rem;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
       background: #ccff00;
       color: #000;
       border: none;
       border-radius: 12px;
       cursor: pointer;
     }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
     #result-msg {
-      margin-top: 20px;
-      padding: 15px;
+      margin-top: 18px;
+      padding: 14px;
       border-radius: 10px;
-      font-weight: bold;
+      font-weight: 700;
       display: none;
+      line-height: 1.4;
     }
-    .status-ok { background: rgba(37, 211, 102, 0.2); border: 1px solid #25d366; color: #25d366; }
-    .status-error { background: rgba(255, 59, 48, 0.2); border: 1px solid #ff3b30; color: #ff3b30; }
-    .status-warning { background: rgba(255, 204, 0, 0.2); border: 1px solid #ffcc00; color: #ffcc00; }
+    .status-ok { background: rgba(37, 211, 102, 0.18); border: 1px solid #25d366; color: #25d366; }
+    .status-error { background: rgba(255, 59, 48, 0.18); border: 1px solid #ff3b30; color: #ff3b30; }
+    .status-warning { background: rgba(255, 204, 0, 0.18); border: 1px solid #ffcc00; color: #ffcc00; }
+
+    .today-list-wrap {
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      text-align: left;
+    }
+    .today-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #a0a0ab;
+      font-weight: 700;
+    }
+    .btn-refresh {
+      width: auto;
+      padding: 4px 10px;
+      font-size: 0.72rem;
+      background: rgba(255, 255, 255, 0.08);
+      color: #ccff00;
+      border-radius: 6px;
+    }
+    .booking-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      font-size: 0.84rem;
+    }
+    .booking-item small { display: block; color: #a0a0ab; font-size: 0.76rem; }
+    .badge-status {
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 4px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+    .badge-confirmado { background: rgba(37, 211, 102, 0.2); color: #25d366; }
+    .badge-pendiente { background: rgba(255, 204, 0, 0.2); color: #ffcc00; }
   </style>
 </head>
 <body>
 
   <div class="checkin-box">
     <h2>CONTROL DE INGRESO</h2>
-    <p style="color: #a0a0ab; font-size: 0.9rem;">Ingrese el código del turno (Ej: 4821)</p>
+    <p style="color: #a0a0ab; font-size: 0.88rem; margin: 0;">Ingresá el código del turno (Ej: 4821)</p>
+
+    <div class="stats-bar">
+      <div class="stat-pill stat-ok">
+        <strong id="count-confirmados">-</strong>
+        <span>Confirmados hoy</span>
+      </div>
+      <div class="stat-pill stat-pend">
+        <strong id="count-pendientes">-</strong>
+        <span>Pendientes hoy</span>
+      </div>
+    </div>
+
     <input type="text" id="code-input" inputmode="numeric" placeholder="Ej: 4821" autocomplete="off">
     <button onclick="validarIngreso()" id="btn-validar">VALIDAR TURNO</button>
-    
+
     <div id="result-msg"></div>
+
+    <div class="today-list-wrap">
+      <div class="today-header">
+        <span>Agenda de hoy</span>
+        <button type="button" class="btn-refresh" onclick="cargarResumenHoy()">Actualizar</button>
+      </div>
+      <div id="today-list" style="color: #a0a0ab; font-size: 0.84rem;">Cargando turnos de hoy...</div>
+    </div>
   </div>
 
   <script>
-    // IMPORTANTE: Pegá acá tu URL exacta de Google Apps Script
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyLsWbd-41slJBYV8GyIvJyOI-VgLHJMY3Iutbdw3Jil3hOEyR1k7rFigZ3sBsGQYM/exec';
 
     document.getElementById('code-input').addEventListener('keydown', (e) => {
@@ -86,6 +190,46 @@
       }
     });
 
+    async function cargarResumenHoy() {
+      const today = new Date().toLocaleDateString('en-CA');
+      const listEl = document.getElementById('today-list');
+      const okEl = document.getElementById('count-confirmados');
+      const pendEl = document.getElementById('count-pendientes');
+
+      try {
+        const res = await fetch(`${SCRIPT_URL}?date=${encodeURIComponent(today)}`);
+        const data = await res.json();
+        const bookings = Array.isArray(data.bookings) ? data.bookings : [];
+
+        const confirmados = bookings.filter(b => b.status === 'Confirmado').length;
+        const pendientes = bookings.filter(b => b.status !== 'Confirmado').length;
+
+        okEl.textContent = confirmados;
+        pendEl.textContent = pendientes;
+
+        if (bookings.length === 0) {
+          listEl.innerHTML = 'No hay turnos registrados para hoy.';
+          return;
+        }
+
+        listEl.innerHTML = bookings.map(b => {
+          const isOk = b.status === 'Confirmado';
+          const badgeClass = isOk ? 'badge-confirmado' : 'badge-pendiente';
+          return `
+            <div class="booking-item">
+              <div>
+                <strong>${b.time}</strong> · ${b.name || 'Sin nombre'}
+                <small>${b.code || ''} · ${b.sport || ''} · ${b.court}</small>
+              </div>
+              <span class="badge-status ${badgeClass}">${b.status || 'Pendiente'}</span>
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        listEl.innerHTML = 'No se pudo cargar la agenda de hoy.';
+      }
+    }
+
     async function validarIngreso() {
       const codeInput = document.getElementById('code-input').value.trim();
       const resultBox = document.getElementById('result-msg');
@@ -93,7 +237,6 @@
 
       if (!codeInput) return;
 
-      // Estado de carga
       btn.textContent = 'BUSCANDO...';
       btn.disabled = true;
       resultBox.style.display = 'none';
@@ -104,16 +247,17 @@
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify({ action: 'checkin', code: codeInput })
         });
-        
+
         const result = await response.json();
-        
+
         resultBox.style.display = 'block';
-        resultBox.className = ''; // Limpiar clases
+        resultBox.className = '';
 
         if (result.status === 'ok') {
           resultBox.classList.add('status-ok');
           resultBox.innerHTML = `${result.message}<br><span style="font-size:0.85rem; color:#fff;">${result.details}</span>`;
-          document.getElementById('code-input').value = ''; // Limpia el input para el próximo
+          document.getElementById('code-input').value = '';
+          cargarResumenHoy();
         } else if (result.status === 'warning') {
           resultBox.classList.add('status-warning');
           resultBox.innerHTML = result.message;
@@ -121,7 +265,6 @@
           resultBox.classList.add('status-error');
           resultBox.innerHTML = result.message;
         }
-
       } catch (error) {
         resultBox.style.display = 'block';
         resultBox.classList.add('status-error');
@@ -131,6 +274,8 @@
         btn.disabled = false;
       }
     }
+
+    document.addEventListener('DOMContentLoaded', cargarResumenHoy);
   </script>
 </body>
 </html>

@@ -63,6 +63,33 @@ function setMatchingSelectValue(selectEl, desiredValue) {
   return false;
 }
 
+function syncSportsRules() {
+  const selectSport = document.getElementById('res-sport');
+  const selectCourt = document.getElementById('res-court');
+  const selectMod = document.getElementById('res-modality');
+  if (!selectSport || !selectCourt || !selectMod) return;
+
+  const isFutsal = normalizeSelectionValue(selectSport.value) === 'futsal';
+
+  Array.from(selectCourt.options).forEach(opt => {
+    opt.disabled = isFutsal && opt.value !== 'Cancha Principal / Completa';
+  });
+
+  Array.from(selectMod.options).forEach(opt => {
+    opt.disabled = isFutsal && normalizeSelectionValue(opt.value).includes('parcial');
+  });
+
+  if (isFutsal) {
+    selectCourt.value = 'Cancha Principal / Completa';
+    const completaOpt = [...selectMod.options].find(opt =>
+      normalizeSelectionValue(opt.value).includes('completo')
+    );
+    if (completaOpt) selectMod.value = completaOpt.value;
+  }
+
+  applyAvailabilityToSelect();
+}
+
 function syncCourtWithModality() {
   const selectMod = document.getElementById('res-modality');
   const selectCourt = document.getElementById('res-court');
@@ -97,16 +124,36 @@ function syncModalityWithCourt() {
 function selectSportFromCard(sportName) {
   const select = document.getElementById('res-sport');
   if (select && setMatchingSelectValue(select, sportName)) {
+    syncSportsRules();
     document.querySelector('.reservation-section').scrollIntoView({ behavior: 'smooth' });
   }
 }
 
 function selectModality(modalityName) {
   const selectMod = document.getElementById('res-modality');
+  const selectSport = document.getElementById('res-sport');
+
+  if (normalizeSelectionValue(modalityName).includes('parcial') && selectSport) {
+    if (normalizeSelectionValue(selectSport.value) === 'futsal') {
+      selectSport.value = 'Básquet';
+      syncSportsRules();
+    }
+  }
+
   if (selectMod && setMatchingSelectValue(selectMod, modalityName)) {
     syncCourtWithModality();
     document.querySelector('.reservation-section').scrollIntoView({ behavior: 'smooth' });
   }
+}
+
+function resetReservationFormUI() {
+  const successBox = document.getElementById('reservation-success-box');
+  if (successBox) {
+    successBox.style.display = 'none';
+    successBox.innerHTML = '';
+  }
+  const nameInput = document.getElementById('res-name');
+  if (nameInput) nameInput.focus();
 }
 
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyLsWbd-41slJBYV8GyIvJyOI-VgLHJMY3Iutbdw3Jil3hOEyR1k7rFigZ3sBsGQYM/exec';
@@ -128,7 +175,6 @@ function isPastHourToday(dateValue, optionTime) {
   const rawHour = parseInt(optionTime, 10);
   if (isNaN(rawHour)) return false;
 
-  // 00:00 hs corresponde al cierre de la noche (hora 24)
   const slotHour = rawHour === 0 ? 24 : rawHour;
   return slotHour <= currentHour;
 }
@@ -240,6 +286,8 @@ async function generateReservation(event) {
     time: time
   };
 
+  let savedInSheet = false;
+
   try {
     const response = await fetch(SCRIPT_URL, {
       method: 'POST',
@@ -253,6 +301,10 @@ async function generateReservation(event) {
       fetchAvailabilityForDate(date);
       return;
     }
+
+    if (result.status === 'ok') {
+      savedInSheet = true;
+    }
   } catch (error) {
     console.error('Error al registrar:', error);
   } finally {
@@ -262,10 +314,16 @@ async function generateReservation(event) {
     }
   }
 
-  occupiedBookingsCache.push({ time: time, court: court });
-  applyAvailabilityToSelect();
+  if (savedInSheet) {
+    occupiedBookingsCache.push({ time: time, court: court });
+    applyAvailabilityToSelect();
+  }
 
- let message = `🏟️ *SOLICITUD DE TURNO #${refCode}*\n`;
+  // Limpiar campos personales tras confirmar para evitar doble envío accidental
+  document.getElementById('res-name').value = '';
+  document.getElementById('res-phone').value = '';
+
+  let message = `🏟️ *SOLICITUD DE TURNO #${refCode}*\n`;
   message += `📍 _Arena Paraná Sport (Juan Morath 10)_\n\n`;
   message += `🏆 *Disciplina:* ${sport}\n`;
   message += `🏟️ *Cancha:* ${court}\n`;
@@ -274,7 +332,7 @@ async function generateReservation(event) {
   message += `⏰ *Horario:* ${time}\n`;
   message += `👤 *Responsable:* ${name}\n`;
   message += `📱 *Teléfono:* ${phone}\n\n`;
-  message += `_¡Hola! Envío mi solicitud de reserva para consultar disponibilidad y confirmar el turno._`;
+  message += `_¡Hola! Envío mi solicitud de reserva para confirmar el turno._`;
 
   let shareMessage = `🏟️ *COMPROBANTE DE TURNO #${refCode}*\n`;
   shareMessage += `📍 _Arena Paraná Sport (Juan Morath 10)_\n\n`;
@@ -290,13 +348,23 @@ async function generateReservation(event) {
   const waShareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareMessage)}`;
 
   if (successBox) {
+    const statusTitle = savedInSheet
+      ? '¡Turno pre-reservado en agenda!'
+      : '⚠️ Sin conexión con la agenda automática';
+    const statusNote = savedInSheet
+      ? `<strong>${sport}</strong> · ${court}<br>${date} a las <strong>${time}</strong>`
+      : `Enviá tu solicitud por WhatsApp al complejo para confirmarlo manualmente.<br><strong>${sport}</strong> · ${date} · <strong>${time}</strong>`;
+
     successBox.innerHTML = `
       <span class="confirm-badge">CÓDIGO #${refCode}</span>
-      <h4>¡Turno pre-reservado en agenda!</h4>
-      <p><strong>${sport}</strong> · ${court}<br>${date} a las <strong>${time}</strong></p>
+      <h4>${statusTitle}</h4>
+      <p>${statusNote}</p>
       <a href="${waShareUrl}" target="_blank" rel="noopener noreferrer" class="btn-whatsapp-confirm">
         Compartir comprobante por WhatsApp
       </a>
+      <button type="button" onclick="resetReservationFormUI()" style="margin-top: 12px; background: transparent; border: none; color: var(--text-muted); font-size: 0.85rem; text-decoration: underline; cursor: pointer;">
+        Reservar otro turno
+      </button>
     `;
     successBox.style.display = 'block';
     successBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -395,6 +463,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const dateInput = document.getElementById('res-date');
   const courtSelect = document.getElementById('res-court');
   const modalitySelect = document.getElementById('res-modality');
+  const sportSelect = document.getElementById('res-sport');
 
   if (dateInput) {
     const today = new Date().toLocaleDateString('en-CA');
@@ -405,6 +474,11 @@ document.addEventListener('DOMContentLoaded', () => {
     dateInput.addEventListener('change', (e) => {
       fetchAvailabilityForDate(e.target.value);
     });
+  }
+
+  if (sportSelect) {
+    sportSelect.addEventListener('change', syncSportsRules);
+    syncSportsRules();
   }
 
   if (courtSelect) {
