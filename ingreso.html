@@ -201,6 +201,9 @@
         const data = await res.json();
         const bookings = Array.isArray(data.bookings) ? data.bookings : [];
 
+        // Ordenar cronológicamente de 08:00 hs a 23:00 hs
+        bookings.sort((a, b) => a.time.localeCompare(b.time));
+
         const confirmados = bookings.filter(b => b.status === 'Confirmado').length;
         const pendientes = bookings.filter(b => b.status !== 'Confirmado').length;
 
