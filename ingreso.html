@@ -69,8 +69,7 @@
   <div class="checkin-box">
     <h2>CONTROL DE INGRESO</h2>
     <p style="color: #a0a0ab; font-size: 0.9rem;">Ingrese el código del turno (Ej: 4821)</p>
-    
-    <input type="text" id="code-input" placeholder="XXXX" autocomplete="off">
+    <input type="text" id="code-input" inputmode="numeric" placeholder="Ej: 4821" autocomplete="off">
     <button onclick="validarIngreso()" id="btn-validar">VALIDAR TURNO</button>
     
     <div id="result-msg"></div>
@@ -79,6 +78,13 @@
   <script>
     // IMPORTANTE: Pegá acá tu URL exacta de Google Apps Script
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyLsWbd-41slJBYV8GyIvJyOI-VgLHJMY3Iutbdw3Jil3hOEyR1k7rFigZ3sBsGQYM/exec';
+
+    document.getElementById('code-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        validarIngreso();
+      }
+    });
 
     async function validarIngreso() {
       const codeInput = document.getElementById('code-input').value.trim();
