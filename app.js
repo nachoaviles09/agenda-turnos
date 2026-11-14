@@ -488,6 +488,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initScrollSpy();
   initMobileMenu();
   cargarHorariosDinamicos(); // Carga automática de horarios desde config.js
+  configurarBotonFlotante();
 
   const dateInput = document.getElementById('res-date');
   const courtSelect = document.getElementById('res-court');
@@ -518,3 +519,11 @@ document.addEventListener('DOMContentLoaded', () => {
     modalitySelect.addEventListener('change', syncCourtWithModality);
   }
 });
+
+function configurarBotonFlotante() {
+  const waFloat = document.querySelector('.whatsapp-float');
+  if (!waFloat) return;
+
+  const textoConsulta = `¡Hola! Quiero consultar sobre ${APP_CONFIG.nombreComplejo} 🏆`;
+  waFloat.href = `https://api.whatsapp.com/send?phone=${APP_CONFIG.whatsappContacto}&text=${encodeURIComponent(textoConsulta)}`;
+}
