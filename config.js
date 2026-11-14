@@ -1,8 +1,8 @@
 const CONFIG = {
   nombreComplejo: "Nombre del Complejo",
   subtitulo: "Sistema de Reservas Online",
-  whatsappContacto: "54934347172233", // Número de WhatsApp del dueño para recibir comprobantes
-  scriptURL: "TU_GOOGLE_APPS_SCRIPT_URL_AQUÍ", // URL del backend de Google Apps Script
+  whatsappContacto: "5493434717233", // Número de WhatsApp del dueño para recibir comprobantes
+  scriptURL: "https://script.google.com/macros/s/AKfycbyLsWbd-41slJBYV8GyIvJyOI-VgLHJMY3Iutbdw3Jil3hOEyR1k7rFigZ3sBsGQYM/exec", // URL del backend de Google Apps Script
   
   // Deportes disponibles
   deportes: [
