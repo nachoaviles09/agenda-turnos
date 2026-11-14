@@ -1,4 +1,4 @@
-# 🏟️ Arena Paraná Sport - Sistema Integrado de Reservas
+# 🏟️ Sistema Integrado de Reservas
 
 Plataforma web personalizada de gestión de turnos, control de acceso, cancelación autónoma y catálogo comercial para el complejo deportivo **Arena Paraná Sport**.
 
