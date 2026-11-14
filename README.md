@@ -1,6 +1,6 @@
 # 🏟️ Sistema Integrado de Reservas
 
-Plataforma web personalizada de gestión de turnos, control de acceso, cancelación autónoma y catálogo comercial para el complejo deportivo **Arena Paraná Sport**.
+Plataforma web personalizada de gestión de turnos, control de acceso, cancelación autónoma y catálogo comercial para el complejo deportivo **LUGAR**.
 
 El sistema permite a los jugadores consultar disponibilidad en tiempo real, agendar turnos de forma autónoma y cancelar reservas con un solo código, mientras que el personal del complejo gestiona los ingresos mediante un panel de control rápido sincronizado con una base de datos automatizada en Google Sheets.
 
