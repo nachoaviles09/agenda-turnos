@@ -278,7 +278,25 @@
       }
     }
 
-    document.addEventListener('DOMContentLoaded', cargarResumenHoy);
+    document.addEventListener('DOMContentLoaded', () => {
+  // 1. Carga inicial apenas abre la página
+  cargarResumenHoy();
+
+  // 2. Actualización automática cada 30 segundos (sin borrar lo que esté escribiendo)
+  setInterval(() => {
+    if (!document.hidden) {
+      cargarResumenHoy();
+    }
+  }, 30000);
+
+  // 3. Si el encargado bloqueó el celular o cambió de app, actualiza apenas vuelve
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      cargarResumenHoy();
+    }
+  });
+});
+
   </script>
 </body>
 </html>
