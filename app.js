@@ -1,3 +1,15 @@
+// Carga dinámica de datos desde el archivo config.js si existe, de lo contrario usa valores por defecto
+const APP_CONFIG = typeof CONFIG !== 'undefined' ? CONFIG : {
+  nombreComplejo: "Complejo Deportivo",
+  whatsappContacto: "549343000000",
+  scriptURL: "",
+  deportes: ["Fútbol 5", "Pádel", "Tenis"],
+  canchas: ["Cancha 1", "Cancha 2"],
+  horarios: ['08:00 a 09:00 hs', '09:00 a 10:00 hs']
+};
+
+const SCRIPT_URL = APP_CONFIG.scriptURL;
+
 const sportsData = [
   {
     id: 'futsal',
@@ -156,7 +168,6 @@ function resetReservationFormUI() {
   if (nameInput) nameInput.focus();
 }
 
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyLsWbd-41slJBYV8GyIvJyOI-VgLHJMY3Iutbdw3Jil3hOEyR1k7rFigZ3sBsGQYM/exec';
 let occupiedBookingsCache = [];
 
 function isSlotBlocked(bookedCourt, selectedCourt, bookedTime, optionTime) {
@@ -319,12 +330,11 @@ async function generateReservation(event) {
     applyAvailabilityToSelect();
   }
 
-  // Limpiar campos personales tras confirmar para evitar doble envío accidental
   document.getElementById('res-name').value = '';
   document.getElementById('res-phone').value = '';
 
   let message = `🏟️ *SOLICITUD DE TURNO #${refCode}*\n`;
-  message += `📍 _Arena Paraná Sport (Juan Morath 10)_\n\n`;
+  message += `📍 _${APP_CONFIG.nombreComplejo}_\n\n`;
   message += `🏆 *Disciplina:* ${sport}\n`;
   message += `🏟️ *Cancha:* ${court}\n`;
   message += `💳 *Modalidad:* ${modality}\n`;
@@ -335,7 +345,7 @@ async function generateReservation(event) {
   message += `_¡Hola! Envío mi solicitud de reserva para confirmar el turno._`;
 
   let shareMessage = `🏟️ *COMPROBANTE DE TURNO #${refCode}*\n`;
-  shareMessage += `📍 _Arena Paraná Sport (Juan Morath 10)_\n\n`;
+  shareMessage += `📍 _${APP_CONFIG.nombreComplejo}_\n\n`;
   shareMessage += `🏆 *Disciplina:* ${sport}\n`;
   shareMessage += `🏟️ *Cancha:* ${court}\n`;
   shareMessage += `📅 *Fecha:* ${date}\n`;
@@ -343,7 +353,7 @@ async function generateReservation(event) {
   shareMessage += `👤 *Reserva a nombre de:* ${name}\n\n`;
   shareMessage += `_¡Nos vemos en la cancha!_`;
 
-  const phoneNumber = '5493434717233';
+  const phoneNumber = APP_CONFIG.whatsappContacto;
   const waUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
   const waShareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareMessage)}`;
 
@@ -444,6 +454,24 @@ function initMobileMenu() {
   });
 }
 
+function cargarHorariosDinamicos() {
+  const timeSelect = document.getElementById('res-time');
+  if (!timeSelect) return;
+
+  const horariosDisponibles = APP_CONFIG.horarios || [
+    '08:00 a 09:00 hs', '09:00 a 10:00 hs', '10:00 a 11:00 hs', '11:00 a 12:00 hs'
+  ];
+
+  timeSelect.innerHTML = '';
+
+  horariosDisponibles.forEach(horario => {
+    const option = document.createElement('option');
+    option.value = horario;
+    option.textContent = horario;
+    timeSelect.appendChild(option);
+  });
+}
+
 if ('scrollRestoration' in history) {
   history.scrollRestoration = 'manual';
 }
@@ -459,6 +487,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initScrollReveal();
   initScrollSpy();
   initMobileMenu();
+  cargarHorariosDinamicos(); // Carga automática de horarios desde config.js
 
   const dateInput = document.getElementById('res-date');
   const courtSelect = document.getElementById('res-court');
